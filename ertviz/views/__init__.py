@@ -32,5 +32,7 @@ def parameter_selector_view(parent):
                 persistence_type="session",
                 className="ert-dropdown",
             ),
+            dcc.Dropdown(id=parent.uuid("parameter-deactivator"), multi=True),
+            dcc.Store(id=parent.uuid("parameter-selection-store")),
         ],
     )
