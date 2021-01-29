@@ -31,9 +31,6 @@ def parameter_comparison_controller(parent, app):
         data = {}
         colors = {}
 
-        # if no parameters selected take up to the first 5 by default
-        # if not bool(parameters):
-        #    parameters = [option["value"] for option in parameter_options][:5]
         for idx, (ensemble_id, color) in enumerate(selected_ensembles.items()):
             ensemble = load_ensemble(parent, ensemble_id)
             ens_key = str(ensemble)
