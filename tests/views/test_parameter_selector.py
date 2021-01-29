@@ -50,4 +50,4 @@ def test_parameter_selector(
     paremeter_deactivator.click()
 
     # this fails, when debugging it passes though; might relate to mocking
-    # assert dash_duo.get_logs() == []
+    assert dash_duo.get_logs() == []
