@@ -34,22 +34,35 @@ def parameter_selector_controller(parent, app):
             raise PreventUpdate
         selected = [] if not selected else selected
 
-        ensemble_id, _ = selected_ensembles.popitem()
-        ensemble = load_ensemble(parent, ensemble_id)
-        if bool(filter_search):
+        params_included = None
+        for ensemble_id, _ in selected_ensembles.items():
+            ensemble = load_ensemble(parent, ensemble_id)
+            if bool(filter_search):
+                parameters = set(
+                    [
+                        parameter_key
+                        for parameter_key in ensemble.parameters
+                        if filter_match(filter_search, parameter_key)
+                        and parameter_key not in selected
+                    ]
+                )
+            else:
+                parameters = set(
+                    [
+                        parameter_key
+                        for parameter_key in ensemble.parameters
+                        if parameter_key not in selected
+                    ]
+                )
+            if params_included is None:
+                params_included = parameters
+            else:
+                params_included = params_included.intersection(params_included)
             options = [
                 {"label": parameter_key, "value": parameter_key}
-                for parameter_key in ensemble.parameters
-                if filter_match(filter_search, parameter_key)
-                and parameter_key not in selected
+                for parameter_key in params_included
             ]
-        else:
-            options = [
-                {"label": parameter_key, "value": parameter_key}
-                for parameter_key in ensemble.parameters
-                if parameter_key not in selected
-            ]
-        return options, selected
+            return options, selected
 
     @app.callback(
         [
