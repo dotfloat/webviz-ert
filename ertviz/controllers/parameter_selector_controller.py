@@ -67,8 +67,6 @@ def parameter_selector_controller(parent, app):
     @app.callback(
         [
             Output(parent.uuid("parameter-selection-store"), "data"),
-            Output(parent.uuid("parameter-deactivator"), "options"),
-            Output(parent.uuid("parameter-deactivator"), "value"),
         ],
         [
             Input(parent.uuid("parameter-selector-multi"), "value"),
@@ -81,6 +79,9 @@ def parameter_selector_controller(parent, app):
     )
     def update_parameter_selection(parameters, n_submit, selected_params, par_opts):
         global old_submit
+        if bool(selected_params):
+            if type(selected_params) == str:
+                selected_params = [selected_params]
         selected_params = [] if not selected_params else selected_params
         parameters = [parameters] if type(parameters) == str else parameters
         shown_parameters = selected_params
@@ -92,5 +93,20 @@ def parameter_selector_controller(parent, app):
             )
             old_submit = n_submit
 
+        return shown_parameters
+
+    @app.callback(
+        [
+            Output(parent.uuid("parameter-deactivator"), "options"),
+            Output(parent.uuid("parameter-deactivator"), "value"),
+        ],
+        [
+            Input(parent.uuid("parameter-selection-store"), "modified_timestamp"),
+        ],
+        [
+            State(parent.uuid("parameter-selection-store"), "data"),
+        ],
+    )
+    def update_parameter_selection(ts, shown_parameters):
         selected_opts = [{"label": param, "value": param} for param in shown_parameters]
-        return shown_parameters, selected_opts, shown_parameters
+        return selected_opts, shown_parameters
