@@ -1,44 +1,7 @@
-import dash_html_components as html
-import dash_core_components as dcc
-import webviz_core_components as wcc
 from .paremeter_view import parameter_view
 from .ensemble_selector_view import ensemble_selector_view
 from .response_view import response_view
 from .plot_view import plot_view_body, plot_view_header
 from .misfit_view import response_obs_view
 from .parallel_coordinates_view import parallel_coordinates_view
-
-
-def parameter_selector_view(parent):
-    return html.Div(
-        children=[
-            html.Div(
-                className="ert-dropdown-container",
-                children=[
-                    html.Label("Search:", className="ert-label"),
-                    dcc.Input(
-                        id=parent.uuid("parameter-selector-filter"),
-                        type="search",
-                        placeholder="Substring...",
-                        className="ert-dropdown",
-                        persistence="session",
-                    ),
-                ],
-            ),
-            wcc.Select(
-                id=parent.uuid("parameter-selector-multi"),
-                multi=True,
-                size=10,
-                persistence="session",
-                className="ert-dropdown",
-            ),
-            dcc.Dropdown(
-                id=parent.uuid("parameter-deactivator"),
-                multi=True,
-                persistence="session",
-            ),
-            dcc.Store(
-                id=parent.uuid("parameter-selection-store"), storage_type="session"
-            ),
-        ],
-    )
+from .selector_view import parameter_selector_view
