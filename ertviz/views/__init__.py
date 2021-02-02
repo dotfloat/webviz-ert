@@ -21,6 +21,7 @@ def parameter_selector_view(parent):
                         type="search",
                         placeholder="Substring...",
                         className="ert-dropdown",
+                        persistence="session",
                     ),
                 ],
             ),
@@ -28,11 +29,16 @@ def parameter_selector_view(parent):
                 id=parent.uuid("parameter-selector-multi"),
                 multi=True,
                 size=10,
-                persistence=True,
-                persistence_type="session",
+                persistence="session",
                 className="ert-dropdown",
             ),
-            dcc.Dropdown(id=parent.uuid("parameter-deactivator"), multi=True),
-            dcc.Store(id=parent.uuid("parameter-selection-store")),
+            dcc.Dropdown(
+                id=parent.uuid("parameter-deactivator"),
+                multi=True,
+                persistence="session",
+            ),
+            dcc.Store(
+                id=parent.uuid("parameter-selection-store"), storage_type="session"
+            ),
         ],
     )

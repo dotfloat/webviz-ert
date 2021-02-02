@@ -1,4 +1,5 @@
 import regex
+import dash
 from dash.exceptions import PreventUpdate
 from dash.dependencies import Input, Output, State
 from ertviz.models import (
@@ -65,9 +66,7 @@ def parameter_selector_controller(parent, app):
             return options, selected
 
     @app.callback(
-        [
-            Output(parent.uuid("parameter-selection-store"), "data"),
-        ],
+        Output(parent.uuid("parameter-selection-store"), "data"),
         [
             Input(parent.uuid("parameter-selector-multi"), "value"),
             Input(parent.uuid("parameter-selector-filter"), "n_submit"),
@@ -78,20 +77,23 @@ def parameter_selector_controller(parent, app):
         ],
     )
     def update_parameter_selection(parameters, n_submit, selected_params, par_opts):
-        global old_submit
-        if bool(selected_params):
-            if type(selected_params) == str:
-                selected_params = [selected_params]
+
+        selected_params = (
+            [selected_params] if type(selected_params) == str else selected_params
+        )
         selected_params = [] if not selected_params else selected_params
         parameters = [parameters] if type(parameters) == str else parameters
-        shown_parameters = selected_params
-        if bool(parameters):
-            shown_parameters = list(set(parameters + selected_params))
-        if n_submit is not None and n_submit > old_submit:
+
+        ctx = dash.callback_context
+        triggered_id = ctx.triggered[0]["prop_id"].split(".")[0]
+        if triggered_id == parent.uuid("parameter-selector-filter"):
             shown_parameters = list(
                 set(selected_params + [parm["value"] for parm in par_opts])
             )
-            old_submit = n_submit
+        elif bool(parameters):
+            shown_parameters = list(set(parameters + selected_params))
+        else:
+            shown_parameters = selected_params
 
         return shown_parameters
 
@@ -108,5 +110,6 @@ def parameter_selector_controller(parent, app):
         ],
     )
     def update_parameter_selection(ts, shown_parameters):
+        shown_parameters = [] if shown_parameters is None else shown_parameters
         selected_opts = [{"label": param, "value": param} for param in shown_parameters]
         return selected_opts, shown_parameters
